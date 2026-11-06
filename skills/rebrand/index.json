@@ -1,0 +1,29 @@
+{
+  "skills": [
+    {
+      "name": "rebrand",
+      "version": "3",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md",
+        "templates/plan.md",
+        "templates/brand.json",
+        "scripts/brand_tokens.py",
+        "scripts/brand-replace.py",
+        "scripts/inventory.py",
+        "scripts/artifact-scan.py",
+        "scripts/binary-diff.py",
+        "scripts/rubric-score.py",
+        "scripts/gen-assets.py",
+        "scripts/benchmark.py",
+        "scripts/removal-log.py",
+        "scripts/revert.py",
+        "scripts/rename-pack.py",
+        "scripts/ast-rename.py",
+        "scripts/js-ast-rename.js",
+        "scripts/state.py",
+        "scripts/merge-preflight.py"
+      ]
+    }
+  ]
+}
