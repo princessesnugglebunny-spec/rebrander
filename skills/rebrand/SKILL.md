@@ -26,7 +26,7 @@ check-file-size, inventory, artifact-scan, binary-diff, rubric-score, gen-assets
 benchmark, removal-log, revert, rename-pack, ast-rename, state, merge-preflight,
 cache, source-scan, report, baseline, derive-checks, adopt, rebrand-run, doctor,
 coupling-review, differentiate, toggle, verify-browser, mcp-server, capture,
-compare-captures). Use these, not hand-rolled sed.
+compare-captures, prune-gaps, retro, skill-review). Use these, not hand-rolled sed.
 
 ## Phases
 1. Intake — clone into `rebrands/sources/`; classify; collect brand if missing.
@@ -39,8 +39,9 @@ compare-captures). Use these, not hand-rolled sed.
 6. RALPH — build/test/lint/format/file-size → fix → source-scan → artifact-scan →
    binary-diff → repeat until green + zero leftovers.
 7. Report — tokens, counts, features, verification, rubric score, removal log,
-   benchmark, gap ledger (`Gaps: none observed` or list), follow-ups.
-8. Sync (optional) — diff upstream; adopt/adapt/decline/defer; re-run RALPH.
+   benchmark, gap ledger (`Gaps: none observed` or list), retro, follow-ups.
+8. Sync (optional) — diff upstream; adopt/adapt/decline/defer; prune gaps
+   (prune-gaps); re-run RALPH.
 
 ## Quality contract
 Real code only; evidence only; no dead weight; ≤666 lines; ruff C901 ≤20;
