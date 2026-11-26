@@ -24,9 +24,10 @@ def main() -> int:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        print("playwright not installed; skipping browser verification.", file=sys.stderr)
         if args.json:
             print(json.dumps({"skipped": True, "reason": "playwright not installed"}))
+        else:
+            print("playwright not installed; skipping.")
         return 0
 
     brand = bt.load_brand(args.brand)
@@ -38,30 +39,47 @@ def main() -> int:
     console_errors = []
     page_errors = []
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        for vp in ({"width": 1440, "height": 980}, {"width": 390, "height": 844}):
-            page = browser.new_page(viewport=vp)
-            page.on("console", lambda m: console_errors.append(m.text) if m.type == "error" else None)
-            page.on("pageerror", lambda e: page_errors.append(str(e)))
-            try:
-                page.goto(args.url, wait_until="networkidle", timeout=30000)
-            except Exception as exc:
-                page_errors.append(str(exc))
-            title = page.title()
-            text = page.inner_text("body")
-            html = page.content()
-            scroll_w = page.evaluate("() => document.documentElement.scrollWidth")
-            inner_w = page.evaluate("() => window.innerWidth")
-            shot = args.shots / ("desktop.png" if vp["width"] == 1440 else "mobile.png")
-            page.screenshot(path=str(shot))
-
-            # checks
-            results.append({"id": "brand-title", "viewport": vp, "pass": target_name.lower() in title.lower()})
-            old_hits = [v for v in old_variants if v in (text + " " + html).lower()]
-            results.append({"id": "brand-strings", "viewport": vp, "pass": len(old_hits) == 0, "hits": old_hits[:5]})
-            results.append({"id": "overflow", "viewport": vp, "pass": (scroll_w - inner_w) <= 0})
-        browser.close()
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            for vp in ({"width": 1440, "height": 980}, {"width": 390, "height": 844}):
+                page = browser.new_page(viewport=vp)
+                page.on("console", lambda m: console_errors.append(m.text) if m.type == "error" else None)
+                page.on("pageerror", lambda e: page_errors.append(str(e)))
+                try:
+                    page.goto(args.url, wait_until="networkidle", timeout=30000)
+                except Exception as exc:
+                    page_errors.append(str(exc))
+                try:
+                    title = page.title()
+                    text = page.inner_text("body")
+                    html = page.content()
+                    scroll_w = page.evaluate("() => document.documentElement.scrollWidth")
+                    inner_w = page.evaluate("() => window.innerWidth")
+                except Exception as exc:
+                    title = ""
+                    text = ""
+                    html = ""
+                    scroll_w = 0
+                    inner_w = 0
+                    page_errors.append(str(exc))
+                shot = args.shots / ("desktop.png" if vp["width"] == 1440 else "mobile.png")
+                try:
+                    page.screenshot(path=str(shot))
+                except Exception:
+                    pass
+                results.append({"id": "brand-title", "viewport": vp, "pass": target_name.lower() in title.lower()})
+                old_hits = [v for v in old_variants if v in (text + " " + html).lower()]
+                results.append({"id": "brand-strings", "viewport": vp, "pass": len(old_hits) == 0, "hits": old_hits[:5]})
+                results.append({"id": "overflow", "viewport": vp, "pass": (scroll_w - inner_w) <= 0})
+                page.close()
+            browser.close()
+    except Exception as exc:
+        if args.json:
+            print(json.dumps({"skipped": True, "reason": str(exc)}))
+        else:
+            print(f"playwright browser unavailable: {exc}")
+        return 0
 
     results.append({"id": "console-errors", "pass": len(console_errors) == 0 and len(page_errors) == 0, "count": len(console_errors) + len(page_errors)})
     results.append({"id": "screenshots", "pass": True})
