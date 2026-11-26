@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install pytest jsonschema libcst ruff==0.17.2
+
+      - name: Lint
+        run: ruff check scripts tests
+
+      - name: Format check
+        run: ruff format --check scripts tests
+
+      - name: File size check
+        run: python scripts/check-file-size.py
+
+      - name: Run tests
+        env:
+          PYTHONPATH: scripts
+        run: python -m pytest tests/ -q
+
+      - name: Create release archive
+        run: |
+          rm -rf /tmp/rebrander-pkg
+          mkdir -p /tmp/rebrander-pkg/rebrander
+          cp -r agents /tmp/rebrander-pkg/rebrander/ 2>/dev/null || true
+          cp -r skills /tmp/rebrander-pkg/rebrander/ 2>/dev/null || true
+          cp README.md /tmp/rebrander-pkg/rebrander/ 2>/dev/null || true
+          cd /tmp/rebrander-pkg
+          find . -name "__pycache__" -type d -prune -exec rm -rf {} + 2>/dev/null
+          find . -name "*.pyc" -delete 2>/dev/null
+          find . -name ".pytest_cache" -type d -prune -exec rm -rf {} + 2>/dev/null
+          zip -r /tmp/rebrander.zip rebrander/
+          tar czf /tmp/rebrander.tar.gz rebrander/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            /tmp/rebrander.zip
+            /tmp/rebrander.tar.gz
+          generate_release_notes: true

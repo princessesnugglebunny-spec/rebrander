@@ -1,0 +1,51 @@
+{
+  "skills": [
+    {
+      "name": "rebrand",
+      "version": "3",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md",
+        "templates/plan.md",
+        "templates/brand.json",
+        "templates/brand.schema.json",
+        "templates/rebrand-gaps.md",
+        "scripts/brand_tokens.py",
+        "scripts/brand-replace.py",
+        "scripts/check-file-size.py",
+        "scripts/inventory.py",
+        "scripts/artifact-scan.py",
+        "scripts/binary-diff.py",
+        "scripts/rubric-score.py",
+        "scripts/gen-assets.py",
+        "scripts/benchmark.py",
+        "scripts/removal-log.py",
+        "scripts/revert.py",
+        "scripts/rename-pack.py",
+        "scripts/ast-rename.py",
+        "scripts/js-ast-rename.js",
+        "scripts/state.py",
+        "scripts/merge-preflight.py",
+        "scripts/cache.py",
+        "scripts/source-scan.py",
+        "scripts/report.py",
+        "scripts/baseline.py",
+        "scripts/derive-checks.py",
+        "scripts/adopt.py",
+        "scripts/rebrand-run.py",
+        "scripts/mcp-server.py",
+        "scripts/verify-browser.py",
+        "scripts/toggle.py",
+        "scripts/differentiate.py",
+        "scripts/coupling-review.py",
+        "scripts/doctor.py",
+        "references/judge-look.md",
+        "completions/rebrander.bash",
+        ".gitignore",
+        ".github/workflows/test.yml",
+        ".github/workflows/release.yml",
+        ".pre-commit-config.yaml"
+      ]
+    }
+  ]
+}

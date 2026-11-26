@@ -1,0 +1,28 @@
+{
+  "$schema": "brand-tokens-v1",
+  "original": {
+    "name": "Original Product Name",
+    "slug": "original-product-name",
+    "org": "original-org",
+    "domain": "original.example.com",
+    "package": "original_product",
+    "namespace": "OriginalProduct",
+    "colors": {
+      "primary": "#000000",
+      "accent": "#ffffff"
+    }
+  },
+  "target": {
+    "name": "New Product Name",
+    "slug": "new-product-name",
+    "org": "new-org",
+    "domain": "new.example.com",
+    "package": "new_product",
+    "namespace": "NewProduct",
+    "tagline": "A short tagline for the new brand",
+    "colors": {
+      "primary": "#000000",
+      "accent": "#ffffff"
+    }
+  }
+}
