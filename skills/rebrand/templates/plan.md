@@ -97,3 +97,6 @@ Questions that must be answered before or during execution.
 Reply with **approve** (or requested edits) to begin. Nothing is modified
 before that. Every change, including a single-file change, goes through this
 gate and the RALPH loop; a small plan is fine, skipped verification is not.
+
+## Completion criteria
+Done means every gate in the verification plan passed with cited output.
