@@ -181,6 +181,7 @@ def main() -> int:
     parser.add_argument("--mode", choices=["dry-run", "diff", "apply"], default="dry-run")
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--check", action="store_true", help="report available AST engines and parse-check source files")
+    parser.add_argument("--ast-grep", action="store_true", help="run ast-grep structural rename (optional)")
     parser.add_argument("--version", action="version", version=f"rebrander {bt.get_version()}")
     args = parser.parse_args()
 
@@ -221,6 +222,22 @@ def main() -> int:
 
     langs = detect_languages(args.root)
     ast_result = run_python_ast(args) if "python" in langs else None
+
+    ast_grep_result = None
+    if getattr(args, "ast_grep", False) and tool_available("ast-grep"):
+        ast_grep_result = {"files_changed": 0, "engine": "ast-grep"}
+        brand = bt.load_brand(args.brand)
+        pairs = bt.token_pairs(brand)
+        lang_map = {"typescript": "ts", "python": "py", "go": "go", "rust": "rs", "jvm": "java"}
+        for lang in langs:
+            lg = lang_map.get(lang, lang)
+            for old, new in pairs[:5]:
+                subprocess.run(
+                    ["ast-grep", "run", "--pattern", old, "--rewrite", new, "--lang", lg, str(args.root)],
+                    capture_output=True,
+                    text=True,
+                )
+        ast_grep_result["pairs_attempted"] = len(pairs)
     js_ast_result = (
         run_js_ast(args)
         if "typescript" in langs and tool_available("node") and args.mode == "apply"
@@ -233,6 +250,8 @@ def main() -> int:
         result["ast_rename"] = ast_result
     if js_ast_result:
         result["js_ast_rename"] = js_ast_result
+    if ast_grep_result:
+        result["ast_grep_rename"] = ast_grep_result
     result["languages_detected"] = sorted(langs)
     result["rename_packs"] = {
         key: value

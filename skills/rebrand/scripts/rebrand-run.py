@@ -34,6 +34,8 @@ def main() -> int:
     parser.add_argument("--apply", action="store_true", help="apply (default dry-run only)")
     parser.add_argument("--fast", action="store_true", help="skip artifact/binary scans")
     parser.add_argument("--capture", action="store_true", help="capture original + candidate behavior and compare")
+    parser.add_argument("--prune", action="store_true", help="prune resolved gap entries")
+    parser.add_argument("--skill-review", action="store_true", help="run skill-review on the skill dir")
     parser.add_argument("--resume", action="store_true", help="resume from STATE.json")
     parser.add_argument("--state", type=Path, default=Path("STATE.json"))
     parser.add_argument("--version", action="version", version=f"rebrander {bt.get_version()}")
@@ -92,6 +94,11 @@ def main() -> int:
         _run([sys.executable, str(SCRIPTS / "capture.py"), "--scenario", "original", "--command", "echo ok", "--root", str(root), "--out", str(cap_orig)])
         _run([sys.executable, str(SCRIPTS / "capture.py"), "--scenario", "rebranded", "--command", "echo ok", "--root", str(root), "--out", str(cap_new)])
         _run([sys.executable, str(SCRIPTS / "compare-captures.py"), "--reference", str(cap_orig), "--candidate", str(cap_new), "--out", str(root.parent / "CAPTURE-COMPARE.json")])
+
+    if args.prune:
+        _run([sys.executable, str(SCRIPTS / "prune-gaps.py"), "--file", str(root.parent / "rebrand-gaps.md")])
+    if args.skill_review:
+        _run([sys.executable, str(SCRIPTS / "skill-review.py"), "--skill", str(SCRIPTS.parent / "SKILL.md"), "--json"])
 
     if not args.fast:
         print("Full mode: run artifact-scan.py and binary-diff.py manually if applicable.", file=sys.stderr)
