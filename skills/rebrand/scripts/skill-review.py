@@ -42,6 +42,11 @@ def main() -> int:
         issues.append(f"description {len(desc)} chars > {args.max_desc}")
     if not desc:
         issues.append("missing description")
+    # frontmatter checks
+    if "name:" not in (m.group(1) if m else ""):
+        issues.append("missing name in frontmatter")
+    if "triggers" not in text.lower() and "trigger" not in text.lower():
+        issues.append("no trigger phrases mentioned")
 
     result = {"body_lines": body_lc, "desc_chars": len(desc), "issues": issues, "pass": not issues}
     if args.json:

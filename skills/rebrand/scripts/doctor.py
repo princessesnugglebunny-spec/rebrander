@@ -45,6 +45,7 @@ def main() -> int:
         check("ripgrep", lambda: has_exe("rg")),
         check("node", lambda: has_exe("node")),
         check("playwright", lambda: py_mod("playwright")),
+        check("chromium", lambda: has_exe("chromium") or has_exe("chromium-browser") or has_exe("google-chrome")),
         check("jsonschema", lambda: py_mod("jsonschema")),
         check("libcst", lambda: py_mod("libcst")),
     ]

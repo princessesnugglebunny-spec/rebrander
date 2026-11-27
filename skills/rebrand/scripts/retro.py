@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 
@@ -19,10 +20,23 @@ def main() -> int:
     args = parser.parse_args()
 
     out = args.out or (args.root / "RETRO.md")
+    # gather recent git log if available
+    git_log = ""
+    try:
+        r = subprocess.run(["git", "-C", str(args.root), "log", "--oneline", "-10"], capture_output=True, text=True)
+        git_log = r.stdout.strip()
+    except Exception:
+        git_log = "(git unavailable)"
+
     lines = [
         "# Retro",
         "",
-        "Proposed environment improvements (review and apply manually):",
+        "## Recent commits",
+        "```",
+        git_log or "(none)",
+        "```",
+        "",
+        "## Proposed environment improvements",
         "- Add navigation pointers for frequently accessed files.",
         "- Add automated checks for recurring failures.",
         "- Update coding standards if violations repeated.",
